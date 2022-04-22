@@ -1,0 +1,18 @@
+{
+  "name": "shy-mail-back-js",
+  "version": "1.0.0",
+  "description": "Back end for Shy Mail",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "nodemon server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.26.1",
+    "express": "^4.17.3",
+    "install": "^0.13.0",
+    "npm": "^8.7.0"
+  }
+}

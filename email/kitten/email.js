@@ -2,25 +2,54 @@ const axios = require('axios').default
 
 
 function getInbox(name) {
-    let domain = '@shy.my.id'
-    let address = name + domain
-
-    let url = 'https://inboxkitten.com/api/v1/mail/list?recipient=thedumpsterofflyxt'
-
-    var unfilteredInbox = []
-    axios.get(url)
-    .then((res) => {
-        unfilteredInbox = res.data
-        // console.log(res.data[1])
-        const filteredInbox = unfilteredInbox.filter((email) => {
-            return (email.message.headers.to === address)
+    console.log('get inbox for address '+name)
+    return new Promise((resolve, reject) => {
+        let domain = '@shy.my.id'
+        let address = name + domain    
+        let url = 'https://inboxkitten.com/api/v1/mail/list?recipient=thedumpsterofflyxt'
+    
+        var unfilteredInbox = []
+        var finalInbox = []
+        axios.get(url)
+        .then((res) => {
+            unfilteredInbox = res.data
+            if (unfilteredInbox.length === 0) {
+                reject('no address')
+            }
+            // console.log(res.data[1])
+            try {
+                const filteredInbox = unfilteredInbox.filter((email) => {
+                    return (email.message.headers.to === address)
+                })
+                // console.log(filteredInbox)
+    
+                filteredInbox.forEach(email => {
+                    let keyPrefix = email.storage.url.substring(8, 10) + '-'
+                    inboxData = {
+                        'key': keyPrefix + email.storage.key,
+                        'time': email.timestamp,
+                        'from': email.message.headers.from,
+                        'to': email.message.headers.to,
+                        'subject': email.message.headers.subject
+                    }
+    
+                    finalInbox.push(inboxData)
+                })
+    
+                // console.log('finalInbox')
+                resolve(finalInbox)
+            } catch(err) {
+                console.log(err)
+                reject(err)
+            }
         })
+        .catch((err) => {
+            console.log(err)
+        })
+    })
 
-        console.log(filteredInbox)
-    })
-    .catch((err) => {
-        console.log(err)
-    })
 }
 
-getInbox('flomdmoz')
+console.log(getInbox('flomdmoz'))
+
+exports.getInbox = getInbox
