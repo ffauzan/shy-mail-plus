@@ -18,11 +18,15 @@ app.get('/api/mail/:address', async (req, res) => {
         // console.log(kittenMail.getInbox(address))
         const inboxData = await kittenMail.getInbox(address)
         res.json({
+            'status': 1,
             'address': address,
             'data': inboxData
         })
     } catch(err) {
-        console.log(e)
+        console.log(err)
+        res.json({
+            'status': 0
+        })
     }
 
 })

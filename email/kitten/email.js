@@ -4,8 +4,8 @@ const axios = require('axios').default
 function getInbox(name) {
     console.log('get inbox for address '+name)
     return new Promise((resolve, reject) => {
-        let domain = '@shy.my.id'
-        let address = name + domain    
+        // let domain = ''
+        let address = name
         let url = 'https://inboxkitten.com/api/v1/mail/list?recipient=thedumpsterofflyxt'
     
         var unfilteredInbox = []
@@ -45,11 +45,12 @@ function getInbox(name) {
         })
         .catch((err) => {
             console.log(err)
+            reject(err)
         })
     })
 
 }
 
-console.log(getInbox('flomdmoz'))
+// console.log(getInbox('flomdmoz'))
 
 exports.getInbox = getInbox
