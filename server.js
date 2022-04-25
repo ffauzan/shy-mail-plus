@@ -1,5 +1,6 @@
 const express = require('express')
 const dotenv = require('dotenv')
+const cors = require('cors')
 
 const kittenMail = require('./email/kitten/email')
 
@@ -8,6 +9,10 @@ dotenv.config()
 
 const app = express()
 const port = process.env.PORT || 3000
+
+app.use(cors({
+    origin: '*'
+}))
 
 app.get('/', (req, res) => {
     res.send('Hello World')
