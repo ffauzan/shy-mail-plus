@@ -8,6 +8,11 @@ function getInbox(name) {
     console.log('get inbox for address ' + name)
     return new Promise((resolve, reject) => {
         let address = name
+
+        if (address.length < 5 && !address.includes('@')) {
+            reject('invalid address')
+        }
+
         let url = 'https://inboxkitten.com/api/v1/mail/list?recipient=' + kittenAddr
     
         var unfilteredInbox = []
