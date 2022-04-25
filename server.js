@@ -12,10 +12,10 @@ app.get('/', (req, res) => {
     res.send('Hello World')
 })
 
+// Get inbox or message list
 app.get('/api/mail/:address', async (req, res) => {
     try {
         const address = req.params.address
-        // console.log(kittenMail.getInbox(address))
         const inboxData = await kittenMail.getInbox(address)
         res.json({
             'status': 1,
@@ -28,7 +28,23 @@ app.get('/api/mail/:address', async (req, res) => {
             'status': 0
         })
     }
+})
 
+// Get message body
+app.get('/api/msg/:id', async (req, res) => {
+    try {
+        const msgId = req.params.id
+        const msgBody = await kittenMail.getMsg(msgId)
+        res.json({
+            'status': 1,
+            'data': msgBody
+        })
+    } catch(err) {
+        console.log(err)
+        res.json({
+            'status': 0
+        })
+    }    
 })
 
 app.listen(port, () => {
