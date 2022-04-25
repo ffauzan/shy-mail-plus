@@ -1,18 +1,20 @@
 const axios = require('axios').default
+const dotenv = require('dotenv')
 
+dotenv.config()
 
+const kittenAddr = process.env.KITTEN_ADDR
 function getInbox(name) {
     console.log('get inbox for address ' + name)
     return new Promise((resolve, reject) => {
         let address = name
-        let url = 'https://inboxkitten.com/api/v1/mail/list?recipient=thedumpsterofflyxt'
+        let url = 'https://inboxkitten.com/api/v1/mail/list?recipient=' + kittenAddr
     
         var unfilteredInbox = []
         var finalInbox = []
         axios.get(url)
         .then((res) => {
             unfilteredInbox = res.data
-            console.log(unfilteredInbox)
             if (unfilteredInbox.length === 0) {
                 reject('no inbox')
             }
@@ -86,8 +88,6 @@ function getMsg(id) {
         })
     })
 }
-
-// console.log(getInbox('flomdmoz'))
 
 module.exports = {
     getInbox,

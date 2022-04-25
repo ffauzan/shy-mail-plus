@@ -1,12 +1,13 @@
 const express = require('express')
+const dotenv = require('dotenv')
 
 const kittenMail = require('./email/kitten/email')
 
+dotenv.config()
 
 
 const app = express()
-const port = 3000
-
+const port = process.env.PORT || 3000
 
 app.get('/', (req, res) => {
     res.send('Hello World')
