@@ -21,7 +21,7 @@ function getInbox(name) {
             // console.log(res.data[1])
             try {
                 const filteredInbox = unfilteredInbox.filter((email) => {
-                    return (email.message.headers.to === address)
+                    return (email.message.headers.to.includes(address))
                 })
     
                 filteredInbox.forEach(email => {
