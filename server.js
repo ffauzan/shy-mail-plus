@@ -4,8 +4,8 @@ const cors = require('cors')
 
 const kittenMail = require('./email/kitten/email')
 
-dotenv.config()
 
+dotenv.config()
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -15,7 +15,7 @@ app.use(cors({
 }))
 
 app.get('/', (req, res) => {
-    res.send('Hello World')
+    res.send('Nothing Here')
 })
 
 // Get inbox or message list
@@ -36,7 +36,7 @@ app.get('/api/mail/:address', async (req, res) => {
     }
 })
 
-// Get message body
+// Get message body of a message
 app.get('/api/msg/:id', async (req, res) => {
     try {
         const msgId = req.params.id
@@ -53,6 +53,7 @@ app.get('/api/msg/:id', async (req, res) => {
     }    
 })
 
+// Run
 app.listen(port, () => {
     console.log(`Listening at port ${port}`)
 })

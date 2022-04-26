@@ -1,14 +1,17 @@
 const axios = require('axios').default
 const dotenv = require('dotenv')
 
-dotenv.config()
 
+dotenv.config()
 const kittenAddr = process.env.KITTEN_ADDR
+
+// Get inbox of an address
 function getInbox(name) {
     console.log('get inbox for address ' + name)
     return new Promise((resolve, reject) => {
         let address = name
 
+        // Not so good address validation, need to be reworked
         if (address.length < 5 && !address.includes('@')) {
             reject('invalid address')
         }
@@ -23,17 +26,17 @@ function getInbox(name) {
             if (unfilteredInbox.length === 0) {
                 reject('no inbox')
             }
-            // console.log(res.data[1])
             try {
                 const filteredInbox = unfilteredInbox.filter((email) => {
                     return (email.message.headers.to.includes(address))
                 })
-    
+                
+                // Format the data
                 filteredInbox.forEach(email => {
                     let keyPrefix = email.storage.url.substring(8, 10) + '-'
                     inboxData = {
                         'key': keyPrefix + email.storage.key,
-                        'time': email.timestamp,
+                        'time': Math.round(email.timestamp),
                         'from': email.message.headers.from,
                         'to': email.message.headers.to,
                         'subject': email.message.headers.subject
@@ -80,7 +83,7 @@ function getMsg(id) {
         axios.get(url, config)
         .then((res) => {
             msgBody = res.data
-            // Check if the msg id exist
+            // Check if the msg id exist/valid
             if (msgBody.includes('The kittens found no messages')) {
                 reject('invalid message id')
             } else {
