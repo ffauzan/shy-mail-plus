@@ -4,7 +4,6 @@
   "description": "Back end for Shy Mail",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "nodemon server.js",
     "start": "node server.js"
   },
@@ -13,12 +12,16 @@
   "dependencies": {
     "@prisma/client": "^3.13.0",
     "axios": "^0.26.1",
+    "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
+    "express-validator": "^6.14.0",
     "install": "^0.13.0",
+    "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
     "npm": "^8.7.0",
-    "prisma": "^3.13.0"
+    "prisma": "^3.13.0",
+    "validator": "^13.7.0"
   }
 }

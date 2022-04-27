@@ -1,12 +1,15 @@
 const { PrismaClient } = require('@prisma/client')
-const { user } = new PrismaClient()
+const prisma = new PrismaClient()
+const validator = require('validator')
+const bcrypt = require('bcrypt')
+const JWT = require('jsonwebtoken')
 
-
+const jwtSecret = process.env.JWT_SECRET
 
 async function registerUser(req, res) {
     const { username, password } = req.body
 
-    const isExist = await user.findUnique({
+    const isExist = await prisma.user.findUnique({
         where: {
             username: username
         },
@@ -15,23 +18,88 @@ async function registerUser(req, res) {
         }
     })
 
+    if (password.length < 6) {
+        return res.json({
+            status: 0,
+            message: 'password too short'
+        })
+    }
+
     if (isExist) {
-        res.json({
+        return res.json({
             status: 0,
             message: 'username already registered'
         })
-    } else {
-        const User = await user.create({
-            data: {
-              username: username,
-              password: password,
-            }
-        })
+    }
 
-        res.json({
-            status: 1,
-            message: 'success',
-            data: user
+    const hashedPassword = await bcrypt.hash(password, 10)
+    const user = await prisma.user.create({
+        data: {
+            username: username,
+            password: hashedPassword,
+        }
+    })
+
+    const token = await JWT.sign(
+        {
+            id: user.id
+        },
+        jwtSecret,
+        {
+            expiresIn: '7d'
+        }
+    )
+
+    return res.json({
+        status: 1,
+        message: 'success',
+        data: {
+            token: token
+        },
+    })
+    
+}
+
+async function login(req, res) {
+    const { username, password } = req.body
+
+    const user = await prisma.user.findUnique({
+        where: {
+            username: username
+        },
+        select: {
+            id: true,
+            username: true,
+            password: true,
+        }
+    })
+
+    if (!user) {
+        return res.json({
+            success: 0,
+            message: 'Check again your username or password'
+        })
+    }
+
+    const isAuthenticated = bcrypt.compare(password, user.password)
+
+    if (isAuthenticated) {
+        const token = await JWT.sign(
+            {
+                id: user.id
+            },
+            jwtSecret,
+            {
+                expiresIn: '7d'
+            }
+        )
+
+        return res.json({
+            success: 1,
+            message: '',
+            data: {
+                token: token
+            },
         })
     }
 }
@@ -45,15 +113,15 @@ async function getAllUser(req, res) {
         }
     })
 
-    res.json({
+    return res.json({
         status: 1,
         message: 'success',
         data: users
     })
 }
 
-
 module.exports = {
     registerUser,
-    getAllUser
+    getAllUser,
+    login,
 }
