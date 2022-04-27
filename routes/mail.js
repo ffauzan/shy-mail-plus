@@ -1,22 +1,6 @@
 const router = require('express').Router()
 const { getInbox, getMsg } = require('../provider/kitten/email')
 
-
-router.post('/register', async (req, res) => {
-    let username = req.body.username
-    let password = req.body.password
-    registerUser({
-        username: username,
-        password: password
-    })
-    res.send(username)
-})
-
-router.get('/all', async (req, res) => {
-    const user = await getAllUser()
-    res.json(user)
-})
-
 // Get inbox or message list
 router.get('/:address', async (req, res) => {
     try {
@@ -36,7 +20,7 @@ router.get('/:address', async (req, res) => {
 })
 
 // Get message body of a message
-app.get('/msg/:id', async (req, res) => {
+mail.get('/msg/:id', async (req, res) => {
     try {
         const msgId = req.params.id
         const msgBody = await kittenMail.getMsg(msgId)
