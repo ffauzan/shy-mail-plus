@@ -1,9 +1,12 @@
+const { json } = require('express/lib/response')
 const kittenMail = require('../provider/kitten/email')
+const { PrismaClient } = require('@prisma/client')
+const prisma = new PrismaClient()
 
 // Get inbox or message list
 async function getInbox(req, res) {
+    const { address } = req.body
     try {
-        const address = req.params.address
         const inboxData = await kittenMail.getInbox(address)
         res.json({
             'status': 1,
@@ -35,7 +38,46 @@ async function getMsg(req, res) {
     }
 }
 
+// Add locked inbox
+async function addLockedInbox(req, res) {
+    const { address, userId } = req.body
+    console.log(req.body)
+    if (!address) {
+        return res.status(400).json({
+            status: 0,
+            message: 'Specify the address'
+        })
+    }
+
+    const inboxExist = await prisma.inbox.findUnique({
+        where: {
+            address: address
+        }
+    })
+
+    if (inboxExist) {
+        return res.status(400).json({
+            status: 0,
+            message: 'address already used'
+        })
+    }
+
+    const newInbox = await prisma.inbox.create({
+        data: {
+            address: address,
+            user_id: userId
+        }
+    })
+
+    console.log(newInbox)
+
+    return res.json({
+        data: newInbox
+    })
+}
+
 module.exports = {
     getInbox,
-    getMsg
+    getMsg,
+    addLockedInbox,
 }

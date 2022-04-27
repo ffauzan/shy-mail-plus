@@ -19,14 +19,14 @@ async function registerUser(req, res) {
     })
 
     if (password.length < 6) {
-        return res.json({
+        return res.status(400).json({
             status: 0,
             message: 'password too short'
         })
     }
 
     if (isExist) {
-        return res.json({
+        return res.status(400).json({
             status: 0,
             message: 'username already registered'
         })
@@ -75,13 +75,13 @@ async function login(req, res) {
     })
 
     if (!user) {
-        return res.json({
+        return res.status(400).json({
             success: 0,
             message: 'Check again your username or password'
         })
     }
 
-    const isAuthenticated = bcrypt.compare(password, user.password)
+    const isAuthenticated = await bcrypt.compare(password, user.password)
 
     if (isAuthenticated) {
         const token = await JWT.sign(
@@ -101,11 +101,16 @@ async function login(req, res) {
                 token: token
             },
         })
+    } else {
+        return res.status(400).json({
+            success: 0,
+            message: 'Check again your username or password'
+        })
     }
 }
 
 async function getAllUser(req, res) {
-    const users = await user.findMany({
+    const users = await prisma.user.findMany({
         select: {
             id: true,
             username: true,

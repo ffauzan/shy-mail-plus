@@ -20,7 +20,7 @@ model User {
 
 model Inbox {
   id         Int      @id @default(autoincrement())
-  iddress    String   @unique
+  address    String   @unique
   created_at DateTime @default(now())
   user       User     @relation(fields: [user_id], references: [id])
   user_id    Int
