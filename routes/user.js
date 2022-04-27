@@ -1,20 +1,9 @@
 const router = require('express').Router()
-const { registerUser, getAllUser } = require('../controller/user')
+const userController = require('../controller/userController')
 
 
-router.post('/register', async (req, res) => {
-    let username = req.body.username
-    let password = req.body.password
-    registerUser({
-        username: username,
-        password: password
-    })
-    res.send(username)
-})
+router.post('/register', userController.registerUser)
+router.get('/all', userController.getAllUser)
 
-router.get('/all', async (req, res) => {
-    const user = await getAllUser()
-    res.json(user)
-})
 
 module.exports = router
