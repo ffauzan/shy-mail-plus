@@ -104,7 +104,7 @@ async function addLockedInbox(req, res) {
     })
 }
 
-// Get locked inbox
+// Get locked all locked inbox
 async function getLockedInboxes(req, res) {
     const { userId } = req.body
 
@@ -126,9 +126,67 @@ async function getLockedInboxes(req, res) {
 
 }
 
+
+// Get specific locked inbox
+async function getLockedInbox(req, res) {
+    const { userId } = req.body
+    const inboxId = parseInt(req.params.inboxId)
+
+    if (!inboxId) {
+        return res.json({
+            status: 0,
+            message: 'invalid inboxId',
+        })
+    }
+    // console.trace(inboxId)
+    try {
+        const inbox = await prisma.inbox.findUnique({
+            where: {
+                id: inboxId,
+                // user_id: userId
+            },
+            select: {
+                id: true,
+                address: true,
+                user_id: true
+            },
+        })
+
+        if (!inbox) {
+            return res.json({
+                status: 0,
+                message: 'address not found',
+            })
+        }
+
+        if (userId == inbox.user_id) {
+            return res.json({
+                status: 1,
+                message: '',
+                data: inbox,
+            })
+        } else {
+            return res.json({
+                status: 0,
+                message: 'unauthorized',
+            })
+        }
+        
+    } catch (error) {
+        return res.json({
+            status: 0,
+            message: 'address not found',
+            data: error.message
+        })
+    }
+}
+
+
+
 module.exports = {
     getInbox,
     getMsg,
     addLockedInbox,
     getLockedInboxes,
+    getLockedInbox,
 }

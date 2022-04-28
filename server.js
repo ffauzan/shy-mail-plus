@@ -2,7 +2,7 @@ const express = require('express')
 const dotenv = require('dotenv')
 const cors = require('cors')
 
-const kittenMail = require('./provider/kitten/email')
+const { errorHandler } = require('./middleware/errorHandler')
 
 //Route
 const userRoute = require('./routes/user')
@@ -20,6 +20,8 @@ app.use(express.json())
 
 app.use('/api/user', userRoute)
 app.use('/api/mail', mailRoute)
+
+// app.use(errorHandler)
 
 
 

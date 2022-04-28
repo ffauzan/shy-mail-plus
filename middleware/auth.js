@@ -22,7 +22,7 @@ async function userAuth(req, res, next) {
     try {
         let userPayload = await JWT.verify(token, process.env.JWT_SECRET)
         req.body.userId = userPayload.id
-        console.log(userPayload)
+        // console.log(userPayload)
         next() 
     } catch (error) {
         return res.status(400).json({
