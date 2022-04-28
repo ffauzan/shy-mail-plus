@@ -11,6 +11,10 @@ function getInbox(name) {
     return new Promise((resolve, reject) => {
         let address = name
 
+        if (!address) {
+            reject('no address')
+        }
+
         // Not so good address validation, need to be reworked
         if (address.length < 5 && !address.includes('@')) {
             reject('invalid address')

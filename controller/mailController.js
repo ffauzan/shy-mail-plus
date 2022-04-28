@@ -5,7 +5,32 @@ const prisma = new PrismaClient()
 
 // Get inbox or message list
 async function getInbox(req, res) {
-    const { address } = req.body
+    const { address } = req.params
+
+    if (!address) {
+        return res.status(400).json({
+            status: 0,
+            message: 'Specify the address'
+        })
+    }
+
+    // Check if requested address is a locked inbox
+    const inboxExist = await prisma.inbox.findUnique({
+        where: {
+            address: address
+        },
+        select: {
+            id: true
+        }
+    })
+
+    if (inboxExist) {
+        return res.status(400).json({
+            status: 0,
+            message: 'address already used'
+        })
+    }
+
     try {
         const inboxData = await kittenMail.getInbox(address)
         res.json({
@@ -41,7 +66,7 @@ async function getMsg(req, res) {
 // Add locked inbox
 async function addLockedInbox(req, res) {
     const { address, userId } = req.body
-    console.log(req.body)
+    // console.log(req.body)
     if (!address) {
         return res.status(400).json({
             status: 0,
@@ -52,6 +77,9 @@ async function addLockedInbox(req, res) {
     const inboxExist = await prisma.inbox.findUnique({
         where: {
             address: address
+        },
+        select: {
+            id: true
         }
     })
 
@@ -76,8 +104,31 @@ async function addLockedInbox(req, res) {
     })
 }
 
+// Get locked inbox
+async function getLockedInboxes(req, res) {
+    const { userId } = req.body
+
+    const inboxes = await prisma.inbox.findMany({
+        select: {
+            id: true,
+            address: true
+        },
+        where: {
+            user_id: userId
+        }
+    })
+
+    return res.json({
+        status: 0,
+        message: '',
+        data: inboxes,
+    })
+
+}
+
 module.exports = {
     getInbox,
     getMsg,
     addLockedInbox,
+    getLockedInboxes,
 }

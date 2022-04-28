@@ -1,7 +1,16 @@
 const JWT = require('jsonwebtoken')
 
 async function userAuth(req, res, next) {
-    const token = req.header('x-auth-token')
+    const authHeader = req.header('Authorization')
+
+    if (!authHeader) {
+        return res.status(403).json({
+            status: 0,
+            message: 'unauthorized'
+        })
+    }
+
+    const token = authHeader.split(' ')[1]
 
     if (!token) {
         return res.status(400).json({
