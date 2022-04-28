@@ -9,14 +9,12 @@ const jwtSecret = process.env.JWT_SECRET
 async function registerUser(req, res) {
     const { username, password } = req.body
 
-    const isExist = await prisma.user.findUnique({
-        where: {
-            username: username
-        },
-        select: {
-            id: true
-        }
-    })
+    if (!password) {
+        return res.status(400).json({
+            status: 0,
+            message: 'mana passwordnyaaaaaaaa'
+        })
+    }
 
     if (password.length < 6) {
         return res.status(400).json({
@@ -25,65 +23,33 @@ async function registerUser(req, res) {
         })
     }
 
-    if (isExist) {
-        return res.status(400).json({
-            status: 0,
-            message: 'username already registered'
+    try {
+        const isExist = await prisma.user.findUnique({
+            where: {
+                username: username
+            },
+            select: {
+                id: true
+            }
         })
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10)
-    const user = await prisma.user.create({
-        data: {
-            username: username,
-            password: hashedPassword,
-        }
-    })
-
-    const token = await JWT.sign(
-        {
-            id: user.id
-        },
-        jwtSecret,
-        {
-            expiresIn: '7d'
-        }
-    )
-
-    return res.json({
-        status: 1,
-        message: 'success',
-        data: {
-            token: token
-        },
-    })
     
-}
-
-async function login(req, res) {
-    const { username, password } = req.body
-
-    const user = await prisma.user.findUnique({
-        where: {
-            username: username
-        },
-        select: {
-            id: true,
-            username: true,
-            password: true,
+    
+    
+        if (isExist) {
+            return res.status(400).json({
+                status: 0,
+                message: 'username already registered'
+            })
         }
-    })
-
-    if (!user) {
-        return res.status(400).json({
-            success: 0,
-            message: 'Check again your username or password'
+    
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const user = await prisma.user.create({
+            data: {
+                username: username,
+                password: hashedPassword,
+            }
         })
-    }
-
-    const isAuthenticated = await bcrypt.compare(password, user.password)
-
-    if (isAuthenticated) {
+    
         const token = await JWT.sign(
             {
                 id: user.id
@@ -93,18 +59,81 @@ async function login(req, res) {
                 expiresIn: '7d'
             }
         )
-
+    
         return res.json({
-            success: 1,
-            message: '',
+            status: 1,
+            message: 'success',
             data: {
                 token: token
             },
         })
-    } else {
+    } catch (err) {
         return res.status(400).json({
-            success: 0,
+            status: 0,
+            message: err.message
+        })
+    } 
+}
+
+async function login(req, res) {
+    const { username, password } = req.body
+
+    if (!username || !password) {
+        return res.status(400).json({
+            status: 0,
             message: 'Check again your username or password'
+        })
+    }
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                username: username
+            },
+            select: {
+                id: true,
+                username: true,
+                password: true,
+            }
+        })
+
+        if (!user) {
+            return res.status(400).json({
+                success: 0,
+                message: 'Check again your username or password'
+            })
+        }
+    
+        const isAuthenticated = await bcrypt.compare(password, user.password)
+    
+        if (isAuthenticated) {
+            const token = await JWT.sign(
+                {
+                    id: user.id
+                },
+                jwtSecret,
+                {
+                    expiresIn: '7d'
+                }
+            )
+    
+            return res.json({
+                success: 1,
+                message: '',
+                data: {
+                    token: token
+                },
+            })
+        } else {
+            return res.status(400).json({
+                success: 0,
+                message: 'Check again your username or password'
+            })
+        }
+    } catch (err) {
+        return res.status(400).json({
+            status: 0,
+            message: err.message
         })
     }
 }

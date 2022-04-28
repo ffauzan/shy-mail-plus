@@ -74,56 +74,71 @@ async function addLockedInbox(req, res) {
         })
     }
 
-    const inboxExist = await prisma.inbox.findUnique({
-        where: {
-            address: address
-        },
-        select: {
-            id: true
+    try {
+        const inboxExist = await prisma.inbox.findUnique({
+            where: {
+                address: address
+            },
+            select: {
+                id: true
+            }
+        })
+    
+        if (inboxExist) {
+            return res.status(400).json({
+                status: 0,
+                message: 'address already used'
+            })
         }
-    })
-
-    if (inboxExist) {
+    
+        const newInbox = await prisma.inbox.create({
+            data: {
+                address: address,
+                user_id: userId
+            }
+        })
+    
+        console.log(newInbox)
+    
+        return res.json({
+            data: newInbox
+        })
+    } catch (err) {
         return res.status(400).json({
             status: 0,
-            message: 'address already used'
+            message: err.message
         })
     }
 
-    const newInbox = await prisma.inbox.create({
-        data: {
-            address: address,
-            user_id: userId
-        }
-    })
 
-    console.log(newInbox)
-
-    return res.json({
-        data: newInbox
-    })
 }
 
 // Get locked all locked inbox
 async function getLockedInboxes(req, res) {
     const { userId } = req.body
 
-    const inboxes = await prisma.inbox.findMany({
-        select: {
-            id: true,
-            address: true
-        },
-        where: {
-            user_id: userId
-        }
-    })
-
-    return res.json({
-        status: 0,
-        message: '',
-        data: inboxes,
-    })
-
+    try {
+        const inboxes = await prisma.inbox.findMany({
+            select: {
+                id: true,
+                address: true
+            },
+            where: {
+                user_id: userId
+            }
+        })
+    
+        return res.json({
+            status: 1,
+            message: '',
+            data: inboxes,
+        })
+    } catch (err) {
+        return res.status(400).json({
+            status: 0,
+            message: err.message
+        })
+    }
 }
 
 
@@ -180,7 +195,6 @@ async function getLockedInbox(req, res) {
         })
     }
 }
-
 
 
 module.exports = {
