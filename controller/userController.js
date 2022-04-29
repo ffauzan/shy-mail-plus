@@ -3,6 +3,7 @@ const prisma = new PrismaClient()
 const validator = require('validator')
 const bcrypt = require('bcrypt')
 const JWT = require('jsonwebtoken')
+const { use } = require('bcrypt/promises')
 
 const jwtSecret = process.env.JWT_SECRET
 
@@ -10,14 +11,14 @@ async function registerUser(req, res) {
     const { username, password } = req.body
 
     if (!password) {
-        return res.status(400).json({
+        return res.json({
             status: 0,
             message: 'mana passwordnyaaaaaaaa'
         })
     }
 
     if (password.length < 6) {
-        return res.status(400).json({
+        return res.json({
             status: 0,
             message: 'password too short'
         })
@@ -36,7 +37,7 @@ async function registerUser(req, res) {
     
     
         if (isExist) {
-            return res.status(400).json({
+            return res.json({
                 status: 0,
                 message: 'username already registered'
             })
@@ -68,7 +69,7 @@ async function registerUser(req, res) {
             },
         })
     } catch (err) {
-        return res.status(400).json({
+        return res.json({
             status: 0,
             message: err.message
         })
@@ -79,7 +80,7 @@ async function login(req, res) {
     const { username, password } = req.body
 
     if (!username || !password) {
-        return res.status(400).json({
+        return res.json({
             status: 0,
             message: 'Check again your username or password'
         })
@@ -98,7 +99,7 @@ async function login(req, res) {
         })
 
         if (!user) {
-            return res.status(400).json({
+            return res.json({
                 success: 0,
                 message: 'Check again your username or password'
             })
@@ -125,13 +126,13 @@ async function login(req, res) {
                 },
             })
         } else {
-            return res.status(400).json({
+            return res.json({
                 success: 0,
                 message: 'Check again your username or password'
             })
         }
     } catch (err) {
-        return res.status(400).json({
+        return res.json({
             status: 0,
             message: err.message
         })
@@ -154,8 +155,43 @@ async function getAllUser(req, res) {
     })
 }
 
+async function getMe(req, res) {
+    const userId = req.body.userId
+    try {
+        const user = await prisma.user.findUnique({
+            select: {
+                id: true,
+                username: true,
+            },
+            where: {
+                id: userId
+            }
+        })
+
+        if (!user) {
+            return res.json({
+                status: 0,
+                message: 'unauthorized'
+            })
+        }
+
+        return res.json({
+            status: 1,
+            message: 'success',
+            data: user
+        })
+
+    } catch (err) {
+        return res.json({
+            status: 0,
+            message: err.message
+        })
+    }
+}
+
 module.exports = {
     registerUser,
     getAllUser,
     login,
+    getMe,
 }
