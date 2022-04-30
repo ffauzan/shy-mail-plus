@@ -6,6 +6,13 @@ const prisma = new PrismaClient()
 // Get inbox or message list
 async function getInbox(req, res) {
     const { address } = req.params
+    let userId = undefined
+
+    try {
+        userId = req.body.userId
+    } catch (error) {
+        
+    }
 
     if (!address) {
         return res.status(400).json({
@@ -20,15 +27,18 @@ async function getInbox(req, res) {
             address: address
         },
         select: {
-            id: true
+            id: true,
+            user_id: true
         }
     })
 
-    if (inboxExist) {
+    if (inboxExist && inboxExist.user_id != userId) {
         return res.status(400).json({
             status: 0,
             message: 'address already used'
         })
+    } else {
+        // console.trace(1)
     }
 
     try {

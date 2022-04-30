@@ -32,6 +32,30 @@ async function userAuth(req, res, next) {
     }
 }
 
+async function optUserAuth(req, res, next) {
+    const authHeader = req.header('Authorization')
+
+    if (authHeader) {
+        const token = authHeader.split(' ')[1]
+        if (token) {
+            try {
+                let userPayload = await JWT.verify(token, process.env.JWT_SECRET)
+                req.body.userId = userPayload.id
+                // console.log(userPayload)
+                next() 
+            } catch (error) {
+                req.body.userId = ''
+                next()
+            }
+        } else {
+            next()
+        }
+    } else {
+        next()
+    }
+}
+
 module.exports = {
-    userAuth
+    userAuth,
+    optUserAuth
 }

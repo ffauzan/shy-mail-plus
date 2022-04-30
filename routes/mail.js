@@ -13,7 +13,7 @@ router.get('/sec-inbox', authMiddleware.userAuth, mailController.getLockedInboxe
 router.get('/sec-inbox/:inboxId', authMiddleware.userAuth, mailController.getLockedInbox)
 
 // Get inbox or message list
-router.get('/:address', mailController.getInbox)
+router.get('/:address', authMiddleware.optUserAuth, mailController.getInbox)
 
 // Get message body of a message
 router.get('/msg/:id', mailController.getMsg)
