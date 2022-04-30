@@ -100,7 +100,7 @@ async function login(req, res) {
 
         if (!user) {
             return res.json({
-                success: 0,
+                status: 0,
                 message: 'Check again your username or password'
             })
         }
@@ -119,7 +119,7 @@ async function login(req, res) {
             )
     
             return res.json({
-                success: 1,
+                status: 1,
                 message: '',
                 data: {
                     token: token
@@ -127,7 +127,7 @@ async function login(req, res) {
             })
         } else {
             return res.json({
-                success: 0,
+                status: 0,
                 message: 'Check again your username or password'
             })
         }
