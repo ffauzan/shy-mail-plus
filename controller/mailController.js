@@ -111,6 +111,8 @@ async function addLockedInbox(req, res) {
         console.log(newInbox)
     
         return res.json({
+            status: 1,
+            message: '',
             data: newInbox
         })
     } catch (err) {
