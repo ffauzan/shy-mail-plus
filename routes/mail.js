@@ -2,6 +2,8 @@ const router = require('express').Router()
 const mailController = require('../controller/mailController')
 const authMiddleware = require('../middleware/auth')
 
+// Is address available as normal/unsecure
+router.get('/check/:address', mailController.isAddrAvailable)
 
 // Add locked inbox
 router.post('/sec-inbox', authMiddleware.userAuth, mailController.addLockedInbox)

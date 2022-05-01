@@ -3,6 +3,44 @@ const kittenMail = require('../provider/kitten/email')
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
+// Check if address available as a unsecure / normal address
+async function isAddrAvailable(req, res) {
+    const { address } = req.params 
+
+    if (!address) {
+        return res.json({
+            status: 0,
+            message: 'Specify the address'
+        })
+    }
+
+    // Check if requested address is a locked inbox
+    const inboxExist = await prisma.inbox.findUnique({
+        where: {
+            address: address
+        },
+        select: {
+            id: true,
+            user_id: true
+        }
+    })
+
+    if (inboxExist) {
+        return res.json({
+            status: 0,
+            message: 'address already used'
+        })
+    } else {
+        return res.json({
+            status: 1,
+            message: '',
+            data: {
+                address: address
+            }
+        })
+    }
+}
+
 // Get inbox or message list
 async function getInbox(req, res) {
     const { address } = req.params
@@ -215,4 +253,5 @@ module.exports = {
     addLockedInbox,
     getLockedInboxes,
     getLockedInbox,
+    isAddrAvailable,
 }
