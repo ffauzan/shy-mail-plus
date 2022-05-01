@@ -10,17 +10,24 @@ const jwtSecret = process.env.JWT_SECRET
 async function registerUser(req, res) {
     const { username, password } = req.body
 
-    if (!password) {
+    if (!password || !username) {
         return res.json({
             status: 0,
-            message: 'mana passwordnyaaaaaaaa'
+            message: 'mana username & passwordnyaaaaaaaa'
         })
     }
 
     if (password.length < 6) {
         return res.json({
             status: 0,
-            message: 'password too short'
+            message: 'password minimum length is 6'
+        })
+    }
+
+    if (username.length < 4) {
+        return res.json({
+            status: 0,
+            message: 'username minimum length is 4'
         })
     }
 
