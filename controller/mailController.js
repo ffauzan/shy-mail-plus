@@ -15,7 +15,7 @@ async function getInbox(req, res) {
     }
 
     if (!address) {
-        return res.status(400).json({
+        return res.json({
             status: 0,
             message: 'Specify the address'
         })
@@ -33,7 +33,7 @@ async function getInbox(req, res) {
     })
 
     if (inboxExist && inboxExist.user_id != userId) {
-        return res.status(400).json({
+        return res.json({
             status: 0,
             message: 'address already used'
         })
@@ -78,7 +78,7 @@ async function addLockedInbox(req, res) {
     const { address, userId } = req.body
     // console.log(req.body)
     if (!address) {
-        return res.status(400).json({
+        return res.json({
             status: 0,
             message: 'Specify the address'
         })
@@ -95,7 +95,7 @@ async function addLockedInbox(req, res) {
         })
     
         if (inboxExist) {
-            return res.status(400).json({
+            return res.json({
                 status: 0,
                 message: 'address already used'
             })
@@ -114,7 +114,7 @@ async function addLockedInbox(req, res) {
             data: newInbox
         })
     } catch (err) {
-        return res.status(400).json({
+        return res.json({
             status: 0,
             message: err.message
         })
@@ -144,7 +144,7 @@ async function getLockedInboxes(req, res) {
             data: inboxes,
         })
     } catch (err) {
-        return res.status(400).json({
+        return res.json({
             status: 0,
             message: err.message
         })

@@ -4,7 +4,7 @@ async function userAuth(req, res, next) {
     const authHeader = req.header('Authorization')
 
     if (!authHeader) {
-        return res.status(403).json({
+        return res.json({
             status: 0,
             message: 'unauthorized'
         })
@@ -13,7 +13,7 @@ async function userAuth(req, res, next) {
     const token = authHeader.split(' ')[1]
 
     if (!token) {
-        return res.status(400).json({
+        return res.json({
             status: 0,
             message: 'no token found'
         })
@@ -25,7 +25,7 @@ async function userAuth(req, res, next) {
         // console.log(userPayload)
         next() 
     } catch (error) {
-        return res.status(400).json({
+        return res.json({
             status: 0,
             message: 'invalid token'
         })
