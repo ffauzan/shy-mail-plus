@@ -120,6 +120,11 @@ async function addLockedInbox(req, res) {
             status: 0,
             message: 'Specify the address'
         })
+    } else if (address.length < 4 || address.length > 50) {
+        return res.json({
+            status: 0,
+            message: 'Not a valid address'
+        })
     }
 
     try {

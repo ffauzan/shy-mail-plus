@@ -9,7 +9,7 @@ const kittenAddr = process.env.KITTEN_ADDR
 function getInbox(name) {
     console.log('get inbox for address ' + name)
     return new Promise((resolve, reject) => {
-        let address = name
+        let address = name.toLowerCase()
 
         if (!address) {
             reject('no address')
